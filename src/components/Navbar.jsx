@@ -1,14 +1,12 @@
 import { useState, useEffect } from 'react'
-import { useActiveSection } from '../hooks'
-import { MenuIcon, CloseIcon } from './Icons'
+import { useActiveSection, useDarkMode } from '../hooks'
+import { MenuIcon, CloseIcon, SunIcon, MoonIcon } from './Icons'
 
 const navLinks = [
   { id: 'hero', label: 'Home' },
-  { id: 'about', label: 'About' },
   { id: 'skills', label: 'Skills' },
+  { id: 'education', label: 'Education' },
   { id: 'projects', label: 'Projects' },
-  { id: 'experience', label: 'Experience' },
-  { id: 'testimonials', label: 'Testimonials' },
   { id: 'contact', label: 'Contact' },
 ]
 
@@ -16,6 +14,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const activeSection = useActiveSection()
+  const [isDark, toggleDark] = useDarkMode()
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20)
@@ -40,7 +39,9 @@ export default function Navbar() {
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled ? 'glass-strong shadow-lg shadow-black/20' : 'bg-transparent'
+        scrolled
+          ? 'bg-surface/80 dark:bg-surface/80 backdrop-blur-xl shadow-lg shadow-black/10 border-b border-border'
+          : 'bg-transparent'
       }`}
       role="banner"
     >
@@ -48,44 +49,60 @@ export default function Navbar() {
         <a
           href="#hero"
           onClick={(e) => { e.preventDefault(); handleClick('hero') }}
-          className="text-lg font-semibold text-content tracking-tight hover:text-accent transition-colors"
+          className="text-lg font-bold tracking-tight transition-colors text-content hover:text-accent"
         >
           {'<PM />'}
         </a>
 
-        {/* Desktop nav */}
-        <ul className="hidden md:flex items-center gap-1" role="list">
-          {navLinks.map((link) => (
-            <li key={link.id}>
-              <a
-                href={`#${link.id}`}
-                onClick={(e) => { e.preventDefault(); handleClick(link.id) }}
-                className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                  activeSection === link.id
-                    ? 'text-accent bg-accent-muted'
-                    : 'text-content-secondary hover:text-content hover:bg-surface-tertiary'
-                }`}
-              >
-                {link.label}
-              </a>
-            </li>
-          ))}
-        </ul>
+        <div className="hidden md:flex items-center gap-1">
+          <ul className="flex items-center gap-1" role="list">
+            {navLinks.map((link) => (
+              <li key={link.id}>
+                <a
+                  href={`#${link.id}`}
+                  onClick={(e) => { e.preventDefault(); handleClick(link.id) }}
+                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                    activeSection === link.id
+                      ? 'text-accent bg-accent-muted'
+                      : 'text-content-secondary hover:text-content hover:bg-surface-elevated dark:hover:bg-surface-tertiary'
+                  }`}
+                >
+                  {link.label}
+                </a>
+              </li>
+            ))}
+          </ul>
 
-        {/* Mobile menu button */}
-        <button
-          className="md:hidden p-2 rounded-lg text-content-secondary hover:text-content hover:bg-surface-tertiary transition-colors"
-          onClick={() => setMobileOpen(!mobileOpen)}
-          aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
-          aria-expanded={mobileOpen}
-        >
-          {mobileOpen ? <CloseIcon /> : <MenuIcon />}
-        </button>
+          <button
+            onClick={toggleDark}
+            className="ml-3 p-2 rounded-lg text-content-secondary hover:text-accent hover:bg-accent-muted transition-all duration-200"
+            aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+          >
+            {isDark ? <SunIcon className="w-4 h-4" /> : <MoonIcon className="w-4 h-4" />}
+          </button>
+        </div>
+
+        <div className="flex md:hidden items-center gap-2">
+          <button
+            onClick={toggleDark}
+            className="p-2 rounded-lg text-content-secondary hover:text-accent transition-colors"
+            aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+          >
+            {isDark ? <SunIcon className="w-4 h-4" /> : <MoonIcon className="w-4 h-4" />}
+          </button>
+          <button
+            className="p-2 rounded-lg text-content-secondary hover:text-content transition-colors"
+            onClick={() => setMobileOpen(!mobileOpen)}
+            aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={mobileOpen}
+          >
+            {mobileOpen ? <CloseIcon /> : <MenuIcon />}
+          </button>
+        </div>
       </nav>
 
-      {/* Mobile menu */}
       {mobileOpen && (
-        <div className="md:hidden glass-strong border-t border-border" role="dialog" aria-label="Mobile navigation">
+        <div className="md:hidden bg-surface/95 dark:bg-surface/95 backdrop-blur-xl border-t border-border" role="dialog" aria-label="Mobile navigation">
           <ul className="px-6 py-4 flex flex-col gap-1" role="list">
             {navLinks.map((link) => (
               <li key={link.id}>
@@ -95,7 +112,7 @@ export default function Navbar() {
                   className={`block px-4 py-3 rounded-lg text-sm font-medium transition-all ${
                     activeSection === link.id
                       ? 'text-accent bg-accent-muted'
-                      : 'text-content-secondary hover:text-content hover:bg-surface-tertiary'
+                      : 'text-content-secondary hover:text-content hover:bg-surface-elevated dark:hover:bg-surface-tertiary'
                   }`}
                 >
                   {link.label}
